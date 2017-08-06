@@ -1,44 +1,52 @@
 import pandas as pd
 import numpy as np
-import pickle
+from sklearn.svm import SVC
 
 class ModelBasedRecommender(object):
     """
     Model-based recommender which uses classification model
     """
-    def __init__(self, data, name, ref):
-        self.data = data
+    def __init__(self, name, data, model):
         self.name = name
-        self.ref = ref
-        self.model = None
-        self.result = []
+        self.data = data[self.name]
+        self.model = model[self.name]
+        cols = self.data.columns
+        self.label = cols[-1]
 
-    def get_result(self):
-        print "recommender: " + self.name
-        return self.result
-
-    def load_model(self, model):
-        self.model = model
-
+    def print_result(self, result):
+        for n in result:
+            print n
 
 class JuanZengBasedLingYu(ModelBasedRecommender):
     """
     Recommender juan zeng fang based on ling yu xinxi
     """
-    def __init__(self, data, name, model, ref):
-        super(JuanZengBasedLingYu, self).__init__(data, name)
-        print "begin to use " + name
-        self.load_model(model)
+    def __init__(self, name, data, model):
+        super(JuanZengBasedLingYu, self).__init__(name, data, model)
 
     def extract(self, Xraw):
         return ""
 
+    def predict(self, X):
+        pred = self.model.predict(X)
+        return pred[0]
+
     def recommend(self, X):
-        from sklearn.svm import SVC
-        res = self.model.predict(X)
-        self.result.add(res[0])
+        pred = self.predict(X)
+        res = self.data[self.data[self.label] == pred].index.tolist()
+        self.print_result(res)
+        return res
+
+    def get_score(self):
+        return 0
 
 
+class JuanZengBasedZijin(ModelBasedRecommender):
+    """
+    Recommender juan zeng based on zi jin
+    """
+    def __init__(self, name, data, model):
+        super(ModelBasedRecommender, self).__init__(name, data, model)
 
 
 

@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
-
 import os
 import pandas as pd
+import cPickle as pkl
 
 def prepare_data(path, encoding, index_col, header):
     """
@@ -18,13 +18,42 @@ def prepare_data(path, encoding, index_col, header):
         f = row[cols[0]]
         p = row[cols[1]]
         res[f] = pd.read_csv(p, encoding=encoding, index_col=index_col, header=header)
-        print "**** load data " + f
+        print "**** load data for " + f
     return res
 
-if __name__ == '__main__':
+def prepare_model(path):
+    """
+    :param path: model path
+    :return: all the model that we use for classification
+    """
+    model_path = pd.read_csv(path)
+    cols = model_path.columns
+    res = {}
+    for index, row in model_path.iterrows():
+        m = row[cols[0]]
+        p = row[cols[1]]
+        res[m] = pkl.load(open(p, 'r'))
+        print "*** prepare model for " + m
+    return res
+
+def prepare_ref(path):
+    """
+    :param path: reference file that we need, such as find index of 基金 or 领域
+    :return:
+    """
+    return []
+
+def prepare_all():
+    """
+    :return: retrun all the data and model prepared 
+    """
     dir_path = os.path.dirname(__file__)
     file_path = dir_path + "/" + "../data/data_path.csv"
+    model_path = dir_path + "/" + "../data/model_path.csv"
+    ref_path = dir_path + "/" + "../data/ref_path.csv"
     encoding = "utf-8"
     index_col = 0
     header = 0
-    res = prepare_data(path=file_path, encoding=encoding, index_col=index_col, header=header)
+    data_res = prepare_data(path=file_path, encoding=encoding, index_col=index_col, header=header)
+    model_res = prepare_model(model_path)
+    return data_res, model_res
