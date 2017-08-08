@@ -1,0 +1,56 @@
+{% extends "bootstrap/base.html"%}
+
+{% block title %} Small Broken Car {% endblock %}
+
+{% block navbar %}
+
+    <style>
+           .navbar-inverse .navbar-nav>li>a{
+                font-size: large;
+                color: #ffffff;
+                text-decoration: double;
+            }
+    </style>
+
+    <nav class="navbar navbar-inverse bg-primary"
+                        role="navigation">
+    <div class="container-fluid">
+
+        <div class="navbar-header">
+
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            </button>
+
+            <a class="navbar-brand" href="/"><img src= "static/images/logo.png " width="50" height="50"/></a>
+
+        </div>
+
+        <div class="navbar-collapse collapse">
+
+            <ul class="nav navbar-nav">
+                <li><a href="/">主页</a></li>
+                <li><a href="/recommend">推荐</a></li>
+                <li><a href="/show">数据</a></li>
+            </ul>
+
+        </div>
+
+    </div>
+    </nav>
+{% endblock %}
+
+{% block message %}
+
+
+    {% for message in get_flashed_messages() %}
+            <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ message }}
+            </div>
+    {% endfor %}
+
+    {% block content%}{% endblock %}
+
+{% endblock %}
+
