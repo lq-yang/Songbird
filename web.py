@@ -1,9 +1,8 @@
 # -*- coding: UTF-8 -*-
 from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_bootstrap import Bootstrap
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, IntegerField, BooleanField, SelectField, RadioField, validators, \
-    SelectMultipleField
+
+from form import RecommendForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'xxcchh930729'
@@ -25,13 +24,6 @@ def recommend():
         flash(u"收到推荐请求")
         return redirect(url_for('result'))
     return render_template("recommend.html", form=form)
-
-
-class RecommendForm(FlaskForm):
-    meet = BooleanField(u"查询是否有捐献记录？", [validators.DataRequired()])
-    lingyu = SelectMultipleField(u"感兴趣投资领域", [validators.Optional()],
-                                 choices=[('py', 'pytho'), ('java', 'Java')])
-    submit = SubmitField(u"提交")
 
 
 @app.route("/result", methods=['GET'])
