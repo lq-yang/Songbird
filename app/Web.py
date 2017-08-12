@@ -1,13 +1,19 @@
 # -*- coding: UTF-8 -*-
+import os
 from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_bootstrap import Bootstrap
+from flask_sqlalchemy import SQLAlchemy
+from Config import Config
 
-from form import RecommendForm
-
+# ---- initialize ----
+basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'xxcchh930729'
+app.config.from_object(Config)
 bootstrap = Bootstrap(app)
+db = SQLAlchemy(app)
 
+
+# --------------------
 
 @app.route('/', methods=['GET'])
 def index():
@@ -16,12 +22,19 @@ def index():
 
 @app.route('/recommend', methods=['GET', 'POST'])
 def recommend():
+    from Form import RecommendForm
     form = RecommendForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
-        is_meet = form.meet.data
+        meet = form.meet.data
+        # 业务领域数据
         lingyu = form.lingyu.data
-        print "yes" if is_meet else "no"
-        flash(u"收到推荐请求")
+        # 财务数据
+        jingzichan = form.jingzichan.data
+        shouru = form.shouru.data
+        zhichu = form.zhichu.data
+        feiyong = form.feiyong.data
+        res = {}
+        print "yes" if meet else "no"
         return redirect(url_for('result'))
     return render_template("recommend.html", form=form)
 

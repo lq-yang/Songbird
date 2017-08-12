@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
+
 from sklearn.svm import SVC
+
 
 class ModelBasedRecommender(object):
     """
@@ -17,6 +19,10 @@ class ModelBasedRecommender(object):
         for n in result:
             print n
 
+    def __repr__(self):
+        print self.name
+
+
 class JuanZengBasedLingYu(ModelBasedRecommender):
     """
     Recommender juan zeng fang based on ling yu xinxi
@@ -25,9 +31,11 @@ class JuanZengBasedLingYu(ModelBasedRecommender):
         super(JuanZengBasedLingYu, self).__init__(name, data, model)
 
     def extract(self, Xraw):
-        return ""
+        from DbConsole import get_lingyu_array
+        return get_lingyu_array(Xraw)
 
-    def predict(self, X):
+    def predict(self, Xraw):
+        X = self.extract(Xraw)
         pred = self.model.predict(X)
         return pred[0]
 
@@ -47,6 +55,18 @@ class JuanZengBasedZijin(ModelBasedRecommender):
     """
     def __init__(self, name, data, model):
         super(ModelBasedRecommender, self).__init__(name, data, model)
+
+    def extract(self, Xraw):
+        from DbConsole import get_caiwu_array
+        return get_caiwu_array(Xraw)
+
+    def recommend(self, X):
+        pass
+
+    def predict(self):
+        pass
+
+
 
 
 
