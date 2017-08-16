@@ -9,6 +9,7 @@ import numpy as np
 from Role import Yewu, YewuJijinIndex, CaiwuJijinIndex
 
 LINGYU_LEN = len(Yewu.query.all())
+CAIWU_LEN = 4
 
 
 # get lingyu index
@@ -37,13 +38,13 @@ def get_lingyu_data():
 
 # get dict to represent caiwu
 def get_caiwu_data():
-    res = {'jingzichan': [(u"小型", 0), (u"中型", 1), (u"大型", 2)], 'shouru': [(u"低", 0), (u"中", 1), (u"高", 2)],
-           'zhichu': [(u"低", 0), (u"中", 1), (u"高", 2)], 'feiyong': [(u"低", 0), (u"中", 1), (u"高", 2)]}
+    res = {'jingzichan': [(str(0), u"小型"), (str(1), u"中型"), (str(2), u"大型")], 'shouru': [(str(0), u"低"), (str(1), u"中"), (str(2), u"高")],
+           'zhichu': [(str(0), u"低"), (str(1), u"中"), (str(2), u"高")], 'feiyong': [(str(0), u"低"), (str(1), u"中"), (str(2), u"高")]}
     return res
 
 # get array to represent caiwu
 def get_caiwu_array(l):
-    res = np.zeros(4)
+    res = np.zeros(CAIWU_LEN)
     res[0] = l['jingzichan']
     res[1] = l['shouru']
     res[2] = l['zhichu']

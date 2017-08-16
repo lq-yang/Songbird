@@ -1,2 +1,3 @@
 model,path
-JuanZengBasedLingYu,../model/svm.dmp
+lingyu,../model/svm_lingyu.dmp
+caiwu,../model/svm_caiwu.pkl

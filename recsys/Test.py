@@ -4,31 +4,26 @@ import random
 from Util import *
 from Recommender import *
 
-def test_model(model):
-    """
-    :param model:
-    :return: test model with true y and predict y
-    """
-    data = model.data
-    cols = data.columns
-    index = random.randint(0, len(data))
-    X = data.iloc[index][cols[:-1]]
-    y_true = data.iloc[index][cols[-1]]
-    y_pred = model.predict(X)
-    print "true label: " + str(y_true) + "  predict label: " + str(y_pred)
-    res = model.recommend(X)
-    print "recommend"
-    for k, v in enumerate(res):
-        print "no.%d"%k + ": " + v
-    return res
-
 # prepare data, mode, reference
 data, model = prepare_all()
 
-# JuanZengBasedLingYu test
-jzly = JuanZengBasedLingYu("JuanZengBasedLingYu", data, model)
-jzly_res = test_model(jzly)
+# prepare model
+model = ModelFactory(data, model)
 
+# caiwu model
+caiwu_res = {}
+caiwu_res["jingzichan"] = 1
+caiwu_res["shouru"] = 0
+caiwu_res["zhichu"] = 1
+caiwu_res["feiyong"] = 0
+pre = model.predict('caiwu', caiwu_res)
+caiwu_data = model.return_model('caiwu').get_data()
+rec = caiwu_data[caiwu_data.label == pre].drop()
+true = model.return_model('caiwu').extract(caiwu_res)
+# model.recommend('caiwu', caiwu_res)
+
+from scipy.spatial.distance import cdist
+dist = cdist()
 
 
 

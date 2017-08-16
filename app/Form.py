@@ -6,16 +6,10 @@ from wtforms import BooleanField, SelectMultipleField, SubmitField, \
 from DbConsole import get_lingyu_data, get_caiwu_data
 
 
-class MultiCheckboxField(SelectMultipleField):
-    widget = widgets.ListWidget(prefix_label=False)
-    option_widget = widgets.CheckboxInput()
-
-
 # recommender choices
 class RecommendForm(FlaskForm):
-
     # 是否查询历史记录
-    meet = BooleanField(u"查询是否有捐献记录？", [validators.DataRequired()])
+    meet = BooleanField(u"查询是否有捐献记录？", [validators.Optional()])
 
     # 输入名称
     name = StringField(u"捐献者名称", [validators.Optional()])
@@ -30,7 +24,7 @@ class RecommendForm(FlaskForm):
 
     # 净资产
     jingzichane_choice = caiwu_choice['jingzichan']
-    jingzichan = MultiCheckboxField(u"净资产", choices=jingzichane_choice)
+    jingzichan = SelectField(u"净资产", choices=jingzichane_choice)
 
     # 收入比列
     shouru_choice = caiwu_choice['shouru']
