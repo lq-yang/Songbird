@@ -7,20 +7,32 @@ class Yewu(db.Model):
     name = db.Column(db.String(100), primary_key=True)
     index = db.Column(db.Integer, unique=True)
 
+
 # 地理位置信息
 class LocationInfo(db.Model):
     name = db.Column(db.String(400), primary_key=True)
     target = db.Column(db.String(400))
+
 
 # 透明度信息
 class PurityInfo(db.Model):
     name = db.Column(db.String(400), primary_key=True)
     target = db.Column(db.Integer)
 
+
 # 业务主管单位
 class ManagementInfo(db.Model):
     name = db.Column(db.String(400), primary_key=True)
     target = db.Column(db.String(400))
+
+
+# 项目信息
+class ProjectInfo(db.Model):
+    foundation = db.Column(db.String(400))
+    project = db.Column(db.String(400))
+    field = db.Column(db.String(400))
+    location = db.Column(db.String(400))
+
 
 # 项目基金会热门度
 class FoundationPopularity(db.Model):
@@ -33,6 +45,7 @@ class FoundationSimilarity(db.Model):
     foundationA = db.Column(db.String(400), primary_key=True)
     foundationB = db.Column(db.String(400), primary_key=True)
     similarity = db.Column(db.Integer)
+
 
 # 基于itemCF的推荐
 class FoundationRec(db.Model):
