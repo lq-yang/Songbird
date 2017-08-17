@@ -81,3 +81,42 @@ def get_management_data():
 def get_location_data():
     res = get_filter_array(LocationInfo.query.all())
     return res
+
+
+# get meet_name array
+def get_meet_data():
+    res = []
+    for record in FoundationRec.query.all():
+        temp = (record.investor, record.investor)
+        if temp not in res:
+            res.append(temp)
+    return res
+
+
+# get interest_name array
+def get_interest_data():
+    res = []
+    for record in FoundationSimilarity.query.all():
+        temp = (record.foundationA, record.foundationA)
+        if temp not in res:
+            res.append(temp)
+    return res
+
+
+# get rec
+def get_rec_data(X):
+    target = FoundationRec.query.filter_by(investor=X)
+    res = {}
+    for t in target:
+        res[t.foundation] = t.rating
+    return res
+
+
+# get similarity
+def get_similarity_data(X):
+    res = {}
+    for item in X:
+        target = FoundationSimilarity.query.filter_by(foundationA=item)
+        for t in target:
+            res[t.foundationB] = t.similarity
+    return res

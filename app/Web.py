@@ -33,8 +33,24 @@ def recommend():
         if form.validate_on_submit():
             res = {}
 
-            # 是否载入历史数据
             meet = form.meet.data
+            interest = form.interest.data
+
+            # 历史捐献数据
+            if meet:
+                meet_name = form.meet_name.data
+                res['rec'] = model.recommend('rec', meet_name)
+                res['rec'] = filter.get_sort(res['rec'], asc=False)
+            else:
+                res['rec'] = None
+
+            # 感兴趣基金数据
+            if interest:
+                interest_name = form.interest_name.data
+                res['similarity'] = model.recommend('similarity', interest_name)
+                res['similarity'] = filter.get_sort(res['similarity'], asc=False)
+            else:
+                res['similarity'] = None
 
             # 业务领域数据
             lingyu = form.lingyu.data
@@ -56,6 +72,13 @@ def recommend():
     return render_template("recommend.html", form=form)
 
 
+@app.route('/info', methods=['GET', 'POST'])
+def info():
+    from Form import InfoForm
+    form = InfoForm(request.form)
+    return render_template("info.html", form=form)
+
+
 @app.route('/info/<int:id>')
 def show_info(id):
     return '<html><h1>This is the info of: %s</h1></html>' % id
@@ -64,5 +87,6 @@ def show_info(id):
 if __name__ == '__main__':
     data_res, model_res = prepare_all()
     model = ModelFactory(data_res, model_res)
+
     filter = Filter(data_res['basic'])
     app.run(debug=True)
