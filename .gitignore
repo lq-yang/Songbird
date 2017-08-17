@@ -1,4 +1,3 @@
-.idea/Songbird.iml
-.idea/misc.xml
-.idea/workspace.xml
+*.iml
+*.xml
 *.pyc
