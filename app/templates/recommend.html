@@ -2,59 +2,169 @@
 
 {% block content %}
 
+<style>
+
+    .form-group{
+
+        padding: 40px;
+
+    }
+
+    span.glyphicon{
+
+        color: #cc0000
+
+    }
+
+    .checkbox{
+
+        padding-left: 180px
+
+    }
+
+    #meet-name{
+
+        display: none;
+
+    }
+
+</style>
+
+<script language="JavaScript">
+    $(document).ready(function () {
+        $("#meet").click(function () {
+           $("#meet-name").toggle();
+        });
+        $("#lingyu").select2();
+        $("#location").select2();
+        $("#management").select2();
+    })
+</script>
+
     <div class="w3-container w3-padding-50 w3-center w3-padding-large" id="main">
 
-        <div class="w3-col m8">
+        <div class="w3-col m10">
 
-        <form class="form-horizontal">
+        <form action="/recommend" class="form-horizontal" method="post">
 
-          <div class="form-group">
+            {{ form.hidden_tag() }}
 
-          {{form.name.label(class_="col-sm-2 control-label")}}
+                  <span class="glyphicon glyphicon-bookmark w3-right w3-right" >
+                        查询信息
+                  </span>
 
-              <div class="col-sm-10">
-                  {{form.name(class_="form-control")}}
+                 <div class="checkbox " align="left">
+                     <div class="col-xs-6">
+                     {{form.meet()}}
+                     {{form.meet.label()}}
+                     </div>
+                     <div class="col-xs-6">
+                     {{form.interest()}}
+                     {{form.interest.label()}}
+                     </div>
+                 </div>
+
+                <div class="form-group" id="meet-name">
+
+
+                    {{form.meet_name.label(class_="col-sm-2 control-label")}}
+
+                      <div class="col-sm-10">
+                          {{form.meet_name(class_="form-control")}}
+                      </div>
+
+                </div>
+
+                <div class="form-group" id="interest-name">
+
+
+
+                </div>
+
+
+
+                <span class="glyphicon glyphicon-bookmark w3-right" >
+                      业务信息
+                  </span>
+
+                  <div class="form-group">
+                        {{form.lingyu.label(class_="col-sm-2 control-label")}}
+                    <div class="col-sm-10">
+                        {{form.lingyu(class_="form-control", multiple=True)}}
+                    </div>
+
+                  </div>
+
+
+        <span class ="glyphicon glyphicon-bookmark w3-right" >
+              财务信息
+          </span>
+
+            <div class="form-group">
+
+
+                    {{form.jingzichan.label(class_="col-sm-2 control-label")}}
+                    <div class="col-sm-1">
+                    {{form.jingzichan(class_="form-control")}}
+                    </div>
+
+                    {{form.shouru.label(class_="col-sm-2 control-label")}}
+                    <div class="col-sm-1">
+                    {{form.shouru(class_="form-control")}}
+                    </div>
+
+                    {{form.zhichu.label(class_="col-sm-2 control-label")}}
+                    <div class="col-sm-1">
+                    {{form.zhichu(class_="form-control")}}
+                    </div>
+
+                    {{form.feiyong.label(class_="col-sm-2 control-label")}}
+                    <div class="col-sm-1">
+                    {{form.feiyong(class_="form-control")}}
+                    </div>
+
+
+            </div>
+
+            <span class ="glyphicon glyphicon-bookmark w3-right" >
+                其他信息（选填）
+            </span>
+
+             <div class="form-group">
+
+
+                    {{form.location.label(class_="col-sm-2 control-label")}}
+                    <div class="col-sm-2">
+                    {{form.location(class_="form-control", multiple=True)}}
+                    </div>
+
+                    {{form.management.label(class_="col-sm-2 control-label")}}
+                    <div class="col-sm-2">
+                    {{form.management(class_="form-control, multiple=True")}}
+                    </div>
+
+                    {{form.purity.label(class_="col-sm-2 control-label")}}
+                    <div class="col-sm-1">
+                    {{form.purity(class_="form-control")}}
+                    </div>
+
+
+             </div>
+
+
+
+
+
+            <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10">
+
+                    {{form.submit(class_="btn btn-default")}}
+
+                </div>
               </div>
 
-          </div>
 
-          <div class="form-group">
-                {{form.lingyu.label(class_="col-sm-2 control-label")}}
-            <div class="col-sm-10">
-                {{form.lingyu(class_="form-control")}}
-            </div>
-
-          </div>
-
-
-
-
-          <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-
-              <div class="checkbox">
-
-                  <label>
-                  <input type="checkbox"> Remember me
-                </label>
-
-              </div>
-
-            </div>
-          </div>
-
-
-
-
-          <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-
-                {{form.submit(class_="btn btn-default")}}
-              <button type="submit" class="btn btn-default">Sign in</button>
-
-            </div>
-          </div>
-        </form>
+            </form>
 
         </div>
 
