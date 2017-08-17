@@ -6,7 +6,7 @@ from app.Role import *
 
 if __name__ == '__main__':
 
-    # db.drop_all()
+    db.drop_all()
     db.create_all()
 
     #  input your new db
@@ -42,4 +42,36 @@ if __name__ == '__main__':
     #
     # db.session.commit()
     # print "finish adding to database"
+
+    # build db for foundation popularity
+    popularity_file = open('/Users/lanqingy/Desktop/Songbird/data/foundation_popularity.txt', 'r')
+    lines = popularity_file.readlines()
+    for line in lines:
+        lst = line.split('\t')
+        db.session.add(FoundationPopularity(foundation=unicode(lst[0], 'utf-8'),
+                                            popularity=int(lst[1])))
+    popularity_file.close()
+
+    # build db for foundation similarity
+    similarity_file = open('/Users/lanqingy/Desktop/Songbird/data/foundation_similarity.txt', 'r')
+    lines = similarity_file.readlines()
+    for line in lines:
+        lst = line.split('\t')
+        db.session.add(FoundationSimilarity(foundationA=unicode(lst[0], 'utf-8'),
+                                            foundationB=unicode(lst[1], 'utf-8'),
+                                            similarity=int(lst[2])))
+    similarity_file.close()
+
+    # build db for foundation recommendation
+    itemcf_file = open('/Users/lanqingy/Desktop/Songbird/data/itemcf.txt', 'r')
+    lines = itemcf_file.readlines()
+    for line in lines:
+        lst = line.split('\t')
+        db.session.add(FoundationRec(investor=unicode(lst[0], 'utf-8'),
+                                     foundation=unicode(lst[1], 'utf-8'),
+                                     rating=float(lst[2])))
+    itemcf_file.close()
+
+    db.session.commit()
+    print "finish adding to database"
 
