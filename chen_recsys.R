@@ -120,11 +120,20 @@ aggregate(x = Zongfeiyong[, 2], by = list(Zongfeiyong[, 1]), FUN=mean)
 # 3       3  1.9596298
 
 
+# label purity data -------------------------------------------
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra) # clustering algorithms & visualizatio
+pure <- read.csv("./data/透明度信息.csv", encoding = "utf-8")
+pure <- na.omit(pure)
+pure.use <- pure[-c(1)]
+pure.use <- scale(pure.use)
+pure.use <- na.omit(pure.use)
 
+k3 <- kmeans(pure.use, centers = 3, nstart = 25)
+fviz_cluster(k3, data = pure.use, title='paiming and score')  
+pure$label <- k3$cluster
 
-
-
-
-
-
+aggregate(x = pure[, 3], by = list(pure[, 4]), FUN=mean)
+boxplot(score~label, data = pure, main = '等级 vs 透明度分数')
 

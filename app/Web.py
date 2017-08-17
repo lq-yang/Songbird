@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from Config import Config
 from Util import prepare_all
-from Recommender import ModelFactory
+from Recommender import ModelFactory, Filter
 
 # ---- initialize ----
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -15,6 +15,7 @@ CSRFProtect(app)
 app.config.from_object(Config)
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
+
 
 # --------------------
 
@@ -25,16 +26,20 @@ def index():
 
 @app.route('/recommend', methods=['GET', 'POST'])
 def recommend():
-
     from Form import RecommendForm
     form = RecommendForm(request.form)
 
     if request.method == 'POST':
         if form.validate_on_submit():
+            res = {}
+
+            # 是否载入历史数据
             meet = form.meet.data
 
             # 业务领域数据
             lingyu = form.lingyu.data
+            res['lingyu'] = model.recommend('lingyu', lingyu)
+            res['lingyu'] = filter.get_sort(res['lingyu'])
 
             # 财务数据
             caiwu_res = {}
@@ -42,18 +47,13 @@ def recommend():
             caiwu_res["shouru"] = form.shouru.data
             caiwu_res["zhichu"] = form.zhichu.data
             caiwu_res["feiyong"] = form.feiyong.data
-            caiwu_array = model.predict("caiwu", caiwu_res)
+            res['caiwu'] = model.recommend('caiwu', caiwu_res)
+            res['caiwu'] = filter.get_sort(res['caiwu'])
 
-
-            return redirect(url_for('result'))
+            return render_template("result.html", res=res)
         else:
             print form.errors
     return render_template("recommend.html", form=form)
-
-
-@app.route("/result", methods=['GET'])
-def result():
-    return render_template("result.html")
 
 
 @app.route('/info/<int:id>')
@@ -64,17 +64,5 @@ def show_info(id):
 if __name__ == '__main__':
     data_res, model_res = prepare_all()
     model = ModelFactory(data_res, model_res)
+    filter = Filter(data_res['basic'])
     app.run(debug=True)
-
-
-
-
-
-
-
-
-
-
-
-
-

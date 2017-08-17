@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import cPickle as pkl
 
+
 def prepare_data(path, encoding, index_col, header):
     """
     :param path: file path
@@ -21,6 +22,7 @@ def prepare_data(path, encoding, index_col, header):
         print "**** load data for " + f
     return res
 
+
 def prepare_model(path):
     """
     :param path: model path
@@ -36,12 +38,6 @@ def prepare_model(path):
         print "*** prepare model for " + m
     return res
 
-def prepare_ref(path):
-    """
-    :param path: reference file that we need, such as find index of 基金 or 领域
-    :return:
-    """
-    return []
 
 def prepare_all():
     """
