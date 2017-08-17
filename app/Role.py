@@ -26,6 +26,14 @@ class ManagementInfo(db.Model):
     target = db.Column(db.String(400))
 
 
+# 项目信息
+class ProjectInfo(db.Model):
+    foundation = db.Column(db.String(400))
+    project = db.Column(db.String(400))
+    field = db.Column(db.String(400))
+    location = db.Column(db.String(400))
+
+
 # 项目基金会热门度
 class FoundationPopularity(db.Model):
     foundation = db.Column(db.String(400), primary_key=True)
