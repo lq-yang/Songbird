@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
 
     # build db for foundation popularity
-    popularity_file = open('/Users/lanqingy/Desktop/Songbird/data/foundation_popularity.txt', 'r')
+    popularity_file = open('/home/chen/Documents/WorkSpace/Songbird/src/data/foundation_popularity.txt', 'r')
     lines = popularity_file.readlines()
     for line in lines:
         lst = line.split('\t')
@@ -58,7 +58,7 @@ if __name__ == '__main__':
     popularity_file.close()
 
     # build db for foundation similarity
-    similarity_file = open('/Users/lanqingy/Desktop/Songbird/data/foundation_similarity.txt', 'r')
+    similarity_file = open('/home/chen/Documents/WorkSpace/Songbird/src/data/foundation_similarity.txt', 'r')
     lines = similarity_file.readlines()
     for line in lines:
         lst = line.split('\t')
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     similarity_file.close()
 
     # build db for foundation recommendation
-    itemcf_file = open('/Users/lanqingy/Desktop/Songbird/data/itemcf.txt', 'r')
+    itemcf_file = open('/home/chen/Documents/WorkSpace/Songbird/src/data/itemcf.txt', 'r')
     lines = itemcf_file.readlines()
     for line in lines:
         lst = line.split('\t')

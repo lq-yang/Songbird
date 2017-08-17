@@ -30,7 +30,7 @@ class ModelBasedRecommender(object):
         obj = obj.reshape(1, obj.shape[0])
         key = rec.index.tolist()
         value = self.get_score(obj, rec)
-        res = {k: v for k, v in zip(key, value[0])}
+        res = {k: float(v) for k, v in zip(key, value[0])}
         return res
 
     def get_score(self, obj, rec):
@@ -53,10 +53,10 @@ class MemoryBasedRecommender(object):
     Memory based model focused on recommending based on history data
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, name):
+        self.name = name
 
-    def recommend(self):
+    def recommend(self, X):
         pass
 
 
@@ -67,7 +67,9 @@ class ModelFactory(object):
 
     def __init__(self, data, model):
         self.model = {"lingyu": JuanZengBasedLingYu("lingyu", data["lingyu"], model["lingyu"]),
-                      "caiwu": JuanZengBasedCaiwu("caiwu", data["caiwu"], model["caiwu"])}
+                      "caiwu": JuanZengBasedCaiwu("caiwu", data["caiwu"], model["caiwu"]),
+                      "rec": JuanZengBasedRec("rec"),
+                      "similarity": JuanZengBasedSimilarity("similarity")}
 
     def return_model(self, name):
         return self.model[name]
@@ -83,7 +85,7 @@ class ModelFactory(object):
 
 class JuanZengBasedLingYu(ModelBasedRecommender):
     """
-    Recommender juan zeng fang based on ling yu xinxi
+    Recommender juan zeng fang based on ling yu info
     """
 
     def __init__(self, name, data, model):
@@ -117,6 +119,33 @@ class JuanZengBasedCaiwu(ModelBasedRecommender):
         return dist
 
 
+class JuanZengBasedRec(MemoryBasedRecommender):
+    """
+    Recommender foundation based on memory
+    """
+
+    def __init__(self, name):
+        super(JuanZengBasedRec, self).__init__(name)
+
+    def recommend(self, X):
+        from DbConsole import get_rec_data
+        res = get_rec_data(X)
+        return res
+
+
+class JuanZengBasedSimilarity(MemoryBasedRecommender):
+    """
+    Recommender foundation based on similarity
+    """
+
+    def __init__(self, name):
+        super(JuanZengBasedSimilarity, self).__init__(name)
+
+    def recommend(self, X):
+        from DbConsole import get_similarity_data
+        res = get_similarity_data(X)
+        return res
+
 class Filter:
     """
     Filter methods to filter out the final result
@@ -130,9 +159,10 @@ class Filter:
         self.constraint.append(c)
 
     @staticmethod
-    def get_sort(d, number=30):
-        import operator
-        res = sorted(d.items(), key=operator.itemgetter(1))
+    def get_sort(d, asc=True, number=20):
+        if asc:
+            res = sorted(d.items(), key=lambda x: x[1])
+        else:
+            res = sorted(d.items(), key=lambda x: -x[1])
         l = min(number, len(res))
         return res[:l]
-

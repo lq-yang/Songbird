@@ -1,0 +1,49 @@
+{% extends "base.html"%}
+
+{% block content %}
+
+<script language="JavaScript">
+    $(document).ready(function () {
+        $("#name").select2();
+    })
+</script>
+
+
+<style>
+     .form-group{
+
+            padding: 40px;
+
+        }
+</style>
+
+    <div class="w3-container w3-padding-50 w3-center w3-padding-large" id="main">
+
+        <div class="w3-col m10">
+
+               <form action="/info" method="post" class="form-inline">
+
+                      <div class="form-group">
+
+                        {{form.name.label(class_="sr-only control-label")}}
+
+                        {{form.name(class_="form-control col-sm-10")}}
+
+                      </div>
+
+                      <div class="form-group">
+                          <div class="col-sm-offset-2 col-sm-10">
+
+                            {{form.submit(class_="btn btn-default")}}
+
+                        </div>
+                      </div>
+
+                </form>
+
+
+
+        </div>
+
+    </div>
+{% endblock %}

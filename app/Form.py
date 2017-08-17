@@ -2,24 +2,30 @@
 
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, SelectMultipleField, SubmitField, \
-    validators, widgets, SelectField, StringField
+    validators, SelectField
 from DbConsole import get_lingyu_data, get_caiwu_data, \
-    get_location_data, get_management_data, get_purity_data
+    get_location_data, get_management_data, get_purity_data, \
+    get_meet_data, get_interest_data
 
 
-# recommender choices
+# 推荐表
 class RecommendForm(FlaskForm):
     # 是否查询历史记录
-    meet = BooleanField(u"是否查询捐献记录？", [validators.Optional()])
+    meet = BooleanField(u"是否查询资助记录？", [validators.Optional()], default='n')
 
     # 是否查询感兴趣的基金
-    interest = BooleanField(u"是否查询感兴趣的运作方？", [validators.Optional()])
+    interest = BooleanField(u"是否查询感兴趣的运作方？", [validators.Optional()], default='n')
 
     # 输入名称
-    meet_name = StringField(u"捐献者名称", [validators.Optional()])
+    meet_name_choice = get_meet_data()
+    meet_name = SelectField(u"资助者名称", [validators.Optional()],
+                            choices=meet_name_choice, default=None)
 
     # 感兴趣的基金
-    interest_name = SelectMultipleField(u"基金名称", [validators.Optional()])
+    interest_name_choice = get_interest_data()
+    interest_name = SelectMultipleField(u"感兴趣基金名称", [validators.Optional()],
+                                        choices=interest_name_choice, default=[u"北京康盟慈善基金会",
+                                                                               u"中国光彩事业基金会"])
 
     # 业务领域
     lingyu_choices = get_lingyu_data()
@@ -58,3 +64,12 @@ class RecommendForm(FlaskForm):
     purity = SelectField(u"透明度", choices=purity_choice, default=None)
 
     submit = SubmitField(u"提交")
+
+
+# 查找表
+class InfoForm(FlaskForm):
+    # 基金名称
+    name_choice = None
+    name = SelectField(u"基金名称", choices=[("0", "c++")])
+
+    submit = SubmitField(u"查找")

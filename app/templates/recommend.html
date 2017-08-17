@@ -22,22 +22,21 @@
 
     }
 
-    #meet-name{
-
-        display: none;
-
-    }
-
 </style>
 
 <script language="JavaScript">
     $(document).ready(function () {
         $("#meet").click(function () {
-           $("#meet-name").toggle();
+           $("#meet-c").toggle();
+        });
+        $("#interest").click(function () {
+            $("#interest-c").toggle();
         });
         $("#lingyu").select2();
         $("#location").select2();
         $("#management").select2();
+        $("#interest_name").select2();
+        $("#meet_name").select2();
     })
 </script>
 
@@ -64,7 +63,7 @@
                      </div>
                  </div>
 
-                <div class="form-group" id="meet-name">
+                <div class="form-group" id="meet-c">
 
 
                     {{form.meet_name.label(class_="col-sm-2 control-label")}}
@@ -75,9 +74,13 @@
 
                 </div>
 
-                <div class="form-group" id="interest-name">
+                <div class="form-group" id="interest-c">
 
+                       {{form.interest_name.label(class_="col-sm-2 control-label")}}
 
+                      <div class="col-sm-10">
+                          {{form.interest_name(class_="form-control", multiple=True)}}
+                      </div>
 
                 </div>
 
