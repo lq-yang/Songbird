@@ -103,7 +103,6 @@ labelChange <- function(data, label, value, name){
 Zongshouru <- cbind(dataFinal$总收入, dataTrain$总收入)
 colnames(Zongshouru) <- c('v1', 'v2')
 
-# jing zi chan
 aggregate(x = Zongshouru[, 2], by = list(Zongshouru[, 1]), FUN=mean)
 
 label <- c("低", "中", "高")

@@ -1,7 +1,17 @@
-pip install flask-wtf 
+**Public Welfare Foundations Recommender System**
+---
+1. Introduction 
 
-pip install flask-bootstrap
+Recommend non-profit foundations in China. The model uses both 
+collaborative filtering methods and machine learning algorithms, which 
+corresponds to memory-based and model-based type.
 
-pip install flask-sqlalchemy
+2. Prerequisites
 
-pip install flask-migrate
+See requirements.txt.
+
+3. Start
+
+Recommend to run app/Web.py in PyCharm.
+
+
