@@ -14,4 +14,6 @@ See requirements.txt.
 
 Recommend to run app/Web.py in PyCharm.
 
+4. Demo
 
+![Alt Text](./demo.gif)
