@@ -1,7 +1,7 @@
 # discretization finantial data -------------------------------------------
 data <- read.csv("./data/基金会财务信息年分权重后结果统计（分类后）.csv", encoding = "utf-8")
 cols <- colnames(data)
-choiceCol <- cols[c(7, 12, 11, 22, 23)]
+choiceCol <- cols[c(2, 3, 4, 5, 6)]
 dataTrain <- data[choiceCol]
 
 # to make shou ru, zhi chu, fei yong smaller than 1
@@ -24,6 +24,7 @@ library(plyr)
 fnDisc <- function(X, method){
   return (discretize(X, method, categories = 3, labels=c(0,1,2)))
 }
+
 # 
 x <- dataTrain[, 1]
 xEqualFreq <- discretize(x, method = 'frequency', categories = 3, labels = c(0, 1, 2)) 
@@ -88,11 +89,6 @@ labelChange <- function(data, label, value, name){
   boxplot(target ~ name , main = '等级 vs 净资产',
           col=(c("gold", "green", "blue")))
 }
-
-# label <- c("小型", "中型", "大型")
-# value <- c(1, 2, 3)
-# data <- Xjinzichan
-# labelChange(data.1, newLabel.1, value.1, "净资产")
 
 # Group.1         x
 # 1       1   8297497
@@ -169,10 +165,6 @@ basic <- c("jingzichan", "shouru", "zhichu", "feiyong", "target")
 colnames(dataTrain) <- paste0(basic, "_label")
 colnames(datatFinal) <- basic[-5]
 data.use <- cbind(dataTrain, datatFinal)
-
-# jingzichan
-boxplot(jingzichan_label~jingzichan, data = data.use, main = '净资产', col=(c("gold", "green", "blue")))
-
 
 
 
