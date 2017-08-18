@@ -19,8 +19,8 @@ class ModelBasedRecommender(object):
         pass
 
     def predict(self, Xraw):
-        X = self.extract(Xraw)
-        pred = self.model.predict(X)
+        x = self.extract(Xraw)
+        pred = self.model.predict(x)
         return pred[0]
 
     def recommend(self, Xraw):
@@ -56,7 +56,7 @@ class MemoryBasedRecommender(object):
     def __init__(self, name):
         self.name = name
 
-    def recommend(self, X):
+    def recommend(self, x):
         pass
 
 
@@ -74,13 +74,13 @@ class ModelFactory(object):
     def return_model(self, name):
         return self.model[name]
 
-    def predict(self, name, X):
+    def predict(self, name, x):
         model = self.return_model(name)
-        return model.predict(X)
+        return model.predict(x)
 
-    def recommend(self, name, X):
+    def recommend(self, name, x):
         model = self.return_model(name)
-        return model.recommend(X)
+        return model.recommend(x)
 
 
 class JuanZengBasedLingYu(ModelBasedRecommender):
@@ -127,9 +127,9 @@ class JuanZengBasedRec(MemoryBasedRecommender):
     def __init__(self, name):
         super(JuanZengBasedRec, self).__init__(name)
 
-    def recommend(self, X):
+    def recommend(self, x):
         from DbConsole import get_rec_data
-        res = get_rec_data(X)
+        res = get_rec_data(x)
         return res
 
 
@@ -141,28 +141,98 @@ class JuanZengBasedSimilarity(MemoryBasedRecommender):
     def __init__(self, name):
         super(JuanZengBasedSimilarity, self).__init__(name)
 
-    def recommend(self, X):
+    def recommend(self, x):
         from DbConsole import get_similarity_data
-        res = get_similarity_data(X)
+        res = get_similarity_data(x)
         return res
 
-class Filter:
+
+class FilterFactory:
     """
     Filter methods to filter out the final result
     """
 
-    def __init__(self, data):
-        self.data = data
+    def __init__(self):
+        self.constraint = {}
+
+    def add_constraint(self, name, c):
+        self.constraint[name] = c
+
+    def clear_constraint(self):
         self.constraint = []
 
-    def add_constrain(self, c):
-        self.constraint.append(c)
+    def get_result(self, x):
+        res = self.add_result(x)
+        self.constraint.clear()
+        l = min(10, len(res))
+        return res[:l]
+
+    def test_result(self, x):
+        from DbConsole import test_location, test_management, test_purity
+        for k, v in self.constraint.iteritems():
+            if k == 'location':
+                if not test_location(x, v):
+                    return False
+            if k == 'management':
+                if not test_management(x, v):
+                    return False
+            if k == 'purity':
+                if not test_purity(x, v):
+                    return False
+        return True
+
+    def add_result(self, x):
+        from collections import Counter
+        keys = []
+        res = []
+        for v in x.itervalues():
+            keys.append(v[0])
+        count = Counter(keys)
+        count = sorted(count.items(), key=lambda y: -y[1])
+        # add results that are common
+        for member in count:
+            if member[1] > 1 and self.test_result(member[0]):
+                res.append(member[0])
+        names = ['rec', 'similarity', 'lingyu', 'caiwu']
+        for name in names:
+            self.renew_result(name, x, res)
+        return res
+
+    def renew_result(self, name, x, res, n=10):
+        # based on recommendation
+        if len(res) < n:
+            for k in x[name]:
+                if k[0] not in res and self.test_result(k[0]):
+                    res.append(k[0])
 
     @staticmethod
-    def get_sort(d, asc=True, number=20):
+    def get_sort(d, asc=True):
         if asc:
             res = sorted(d.items(), key=lambda x: x[1])
         else:
             res = sorted(d.items(), key=lambda x: -x[1])
-        l = min(number, len(res))
-        return res[:l]
+        return res
+
+    @staticmethod
+    def get_popular():
+        from DbConsole import get_popular_data
+        return get_popular_data()
+
+
+class SearchFactory:
+    """
+    Search methods to find the projects info and basic info of the foundation
+    """
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def get_project_info(x):
+        from DbConsole import get_project_array
+        return get_project_array(x)
+
+    @staticmethod
+    def get_basic_info(x):
+        from DbConsole import get_basic_array
+        return get_basic_array(x)

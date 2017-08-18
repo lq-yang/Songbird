@@ -5,7 +5,7 @@ from wtforms import BooleanField, SelectMultipleField, SubmitField, \
     validators, SelectField
 from DbConsole import get_lingyu_data, get_caiwu_data, \
     get_location_data, get_management_data, get_purity_data, \
-    get_meet_data, get_interest_data
+    get_meet_data, get_interest_data, get_basic_data
 
 
 # 推荐表
@@ -69,7 +69,7 @@ class RecommendForm(FlaskForm):
 # 查找表
 class InfoForm(FlaskForm):
     # 基金名称
-    name_choice = None
-    name = SelectField(u"基金名称", choices=[("0", "c++")])
+    name_choice = get_basic_data()
+    name = SelectField(u"基金名称", choices=name_choice, default=None)
 
     submit = SubmitField(u"查找")

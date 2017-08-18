@@ -6,6 +6,7 @@ Created by chen on 8/10/17.
 """
 
 import numpy as np
+from sqlalchemy import desc
 from Role import *
 
 LINGYU_LEN = len(Yewu.query.all())
@@ -67,8 +68,16 @@ def get_filter_array(records):
 
 # get purity array
 def get_purity_data():
-    res = [('0', u"低"), ('1', u"一般"), ('2', u"高")]
+    res = [('0', u"低"), ('1', u"中"), ('2', u"高")]
     return res
+
+
+# test purity
+def test_purity(name, x):
+    obj = PurityInfo.query.filter_by(name=name).first()
+    if obj is None or obj.target != int(x):
+        return False
+    return True
 
 
 # get management array
@@ -77,10 +86,30 @@ def get_management_data():
     return res
 
 
+# test management
+def test_management(name, x):
+    if len(x) == 0:
+        return True
+    obj = ManagementInfo.query.filter_by(name=name).first()
+    if obj is None or obj.target not in x:
+        return False
+    return True
+
+
 # get location array
 def get_location_data():
     res = get_filter_array(LocationInfo.query.all())
     return res
+
+
+# test location
+def test_location(name, x):
+    if len(x) == 0:
+        return True
+    obj = LocationInfo.query.filter_by(name=name).first()
+    if obj is None or obj.target not in x:
+        return False
+    return True
 
 
 # get meet_name array
@@ -119,4 +148,54 @@ def get_similarity_data(X):
         target = FoundationSimilarity.query.filter_by(foundationA=item)
         for t in target:
             res[t.foundationB] = t.similarity
+    return res
+
+
+# get basic info
+def get_basic_data():
+    res = []
+    records = BasicInfo.query.all()
+    for record in records:
+        res.append((record.name, record.name))
+    return res
+
+
+# get project info array
+def get_project_array(X):
+    name = [u"项目", u"业务领域", u"地址"]
+    data = []
+    target = ProjectInfo.query.filter_by(foundation=X)
+    for t in target:
+        data.append({name[0]: t.project, name[1]: t.field, name[2]: t.location})
+    return data
+
+
+# get basic info array
+def get_basic_array(X):
+    name = [u"基金会名称", u"宗旨", u"业务范围", u"成立时间",
+            u"业务主管单位", u"原始基金", u"所在地",
+            u"办公地址", u"理事长姓名", u"对外联系人邮箱", u"网站地址",
+            u"基金会行业领域", u"评估等级"]
+    target = BasicInfo.query.filter_by(name=X).first()
+    data = {name[0]: target.name,
+            name[1]: target.slogan,
+            name[2]: target.quote,
+            name[3]: target.time,
+            name[4]: target.management,
+            name[5]: target.money,
+            name[6]: target.location,
+            name[7]: target.office,
+            name[8]: target.boss,
+            name[9]: target.email,
+            name[10]: target.website,
+            name[11]: target.yewu,
+            name[12]: target.level}
+    return data
+
+# get popularity data
+def get_popular_data():
+    target = FoundationPopularity.query.order_by(desc(FoundationPopularity.popularity)).limit(10).all()
+    res = []
+    for t in target:
+        res.append(t.foundation)
     return res

@@ -78,7 +78,22 @@ Xjinzichan <- cbind(dataFinal$净资产, dataTrain$净资产)
 colnames(Xjinzichan) <- c('v1', 'v2')
 
 # jing zi chan
-aggregate(x = Xjinzichan[, 2], by = list(Xjinzichan[, 1]), FUN=mean)
+labelChange <- function(data, label, value, name){
+  for (i in 1: length(label)){
+      data[data[, 1] == value[i], 1] <- label[i]
+  }
+  target <- as.numeric(data[, 2])
+  name <- data[, 1]
+  temp <- aggregate(x = target, by = list(name), FUN=mean)
+  boxplot(target ~ name , main = '等级 vs 净资产',
+          col=(c("gold", "green", "blue")))
+}
+
+# label <- c("小型", "中型", "大型")
+# value <- c(1, 2, 3)
+# data <- Xjinzichan
+# labelChange(data.1, newLabel.1, value.1, "净资产")
+
 # Group.1         x
 # 1       1   8297497
 # 2       2  32470654
@@ -90,6 +105,12 @@ colnames(Zongshouru) <- c('v1', 'v2')
 
 # jing zi chan
 aggregate(x = Zongshouru[, 2], by = list(Zongshouru[, 1]), FUN=mean)
+
+label <- c("低", "中", "高")
+value <- c(1, 2, 3)
+data <- Zongshouru 
+labelChange(data, label, value, "总收入")
+
 # Group.1          x
 # 1       1 -0.2825629
 # 2       2  0.4333708
@@ -98,6 +119,11 @@ aggregate(x = Zongshouru[, 2], by = list(Zongshouru[, 1]), FUN=mean)
 # we can review
 Zongzhichu <- cbind(dataFinal$总收入, dataTrain$总支出)
 colnames(Zongzhichu) <- c('v1', 'v2')
+
+label <- c("低", "中", "高")
+value <- c(1, 2, 3)
+data <- Xjinzichan
+labelChange(data.1, newLabel.1, value.1, "净资产")
 
 # Zong zhi chu
 aggregate(x = Zongzhichu[, 2], by = list(Zongzhichu[, 1]), FUN=mean)
@@ -135,5 +161,20 @@ fviz_cluster(k3, data = pure.use, title='paiming and score')
 pure$label <- k3$cluster
 
 aggregate(x = pure[, 3], by = list(pure[, 4]), FUN=mean)
-boxplot(score~label, data = pure, main = '等级 vs 透明度分数')
+boxplot(score~label, data = pure, main = '等级 vs 透明度分数', xlabel = "等级", ylabel = "透明度分数", 
+            col=(c("gold", "green", "blue")))
+write.csv(pure, "./data/透明度信息.csv")
+
+# boxplot
+basic <- c("jingzichan", "shouru", "zhichu", "feiyong", "target")
+colnames(dataTrain) <- paste0(basic, "_label")
+colnames(datatFinal) <- basic[-5]
+data.use <- cbind(dataTrain, datatFinal)
+
+# jingzichan
+boxplot(jingzichan_label~jingzichan, data = data.use, main = '净资产', col=(c("gold", "green", "blue")))
+
+
+
+
 

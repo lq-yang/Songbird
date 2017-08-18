@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
 import os
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from Config import Config
 from Util import prepare_all
-from Recommender import ModelFactory, Filter
+from Recommender import ModelFactory, FilterFactory, SearchFactory
 
 # ---- initialize ----
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -39,23 +39,23 @@ def recommend():
             # 历史捐献数据
             if meet:
                 meet_name = form.meet_name.data
-                res['rec'] = model.recommend('rec', meet_name)
-                res['rec'] = filter.get_sort(res['rec'], asc=False)
+                res['rec'] = Model.recommend('rec', meet_name)
+                res['rec'] = Filter.get_sort(res['rec'], asc=False)
             else:
                 res['rec'] = None
 
             # 感兴趣基金数据
             if interest:
                 interest_name = form.interest_name.data
-                res['similarity'] = model.recommend('similarity', interest_name)
-                res['similarity'] = filter.get_sort(res['similarity'], asc=False)
+                res['similarity'] = Model.recommend('similarity', interest_name)
+                res['similarity'] = Filter.get_sort(res['similarity'], asc=False)
             else:
                 res['similarity'] = None
 
             # 业务领域数据
             lingyu = form.lingyu.data
-            res['lingyu'] = model.recommend('lingyu', lingyu)
-            res['lingyu'] = filter.get_sort(res['lingyu'])
+            res['lingyu'] = Model.recommend('lingyu', lingyu)
+            res['lingyu'] = Filter.get_sort(res['lingyu'])
 
             # 财务数据
             caiwu_res = {}
@@ -63,10 +63,31 @@ def recommend():
             caiwu_res["shouru"] = form.shouru.data
             caiwu_res["zhichu"] = form.zhichu.data
             caiwu_res["feiyong"] = form.feiyong.data
-            res['caiwu'] = model.recommend('caiwu', caiwu_res)
-            res['caiwu'] = filter.get_sort(res['caiwu'])
+            res['caiwu'] = Model.recommend('caiwu', caiwu_res)
+            res['caiwu'] = Filter.get_sort(res['caiwu'])
 
-            return render_template("result.html", res=res)
+            # 所在地
+            location = form.location.data
+            if len(location) > 0:
+                Filter.add_constraint('location', location)
+
+            # 主管单位
+            management = form.management.data
+            if len(management) > 0:
+                Filter.add_constraint('management', management)
+
+            # 评价等级
+            purity = form.purity.data
+            if len(purity) > 0:
+                Filter.add_constraint('purity', purity)
+
+            # 开始筛选和合并结果
+            total = Filter.get_result(res)
+
+            # 受欢迎基金
+            popular = Filter.get_popular()
+
+            return render_template("result.html", res=res, total=total, popular=popular)
         else:
             print form.errors
     return render_template("recommend.html", form=form)
@@ -76,17 +97,21 @@ def recommend():
 def info():
     from Form import InfoForm
     form = InfoForm(request.form)
-    return render_template("info.html", form=form)
+    res = {}
+    if request.method == 'POST' and form.validate_on_submit():
+        name = form.name.data
 
+        # find project info
+        res['project'] = Search.get_project_info(name)
 
-@app.route('/info/<int:id>')
-def show_info(id):
-    return '<html><h1>This is the info of: %s</h1></html>' % id
+        # find basic info
+        res['basic'] = Search.get_basic_info(name)
 
+    return render_template("info.html", form=form, res = res)
 
 if __name__ == '__main__':
     data_res, model_res = prepare_all()
-    model = ModelFactory(data_res, model_res)
-
-    filter = Filter(data_res['basic'])
+    Model = ModelFactory(data_res, model_res)
+    Filter = FilterFactory()
+    Search = SearchFactory()
     app.run(debug=True)
