@@ -1,9 +1,84 @@
 {% extends "base.html"%}
 
 {% block content%}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<script language="JavaScript">
+    $("document").ready(function () {
+        var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+        });
+
+        $("#info-close").click(function () {
+            $("#info").css("display", "none");
+            $("#info-text").empty();
+        });
+
+        $("table tr td")
+            .click(function () {
+            var name = $(this).html();
+            if (name.indexOf("基金名称") < 0) {
+               $.ajax({
+                   url: '/getinfo',
+                   data: JSON.stringify({name: name}),
+                   type: 'POST',
+                   contentType: "application/json; charset=utf-8",
+                   dataType: 'json',
+                   success: function(res){
+                       $("#info").find("h3").text(name + "基本信息");
+                       var basic = res["basic"];
+                       for (var key in basic){
+                            $("#info-text").append("<p align='left'>" + "<strong>" + key + ": "
+                                + "</strong>" + basic[key] + "</p>");
+                       }
+                       $("#info").css("display", "block");
+                   },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                }
+               )
+            }
+        })
+            .hover(function () {
+                $(this).css('cursor', 'pointer');
+            });
+
+    })
+</script>
+
 <div class="w3-container w3-padding-50 w3-center w3-padding-large" id="main">
 
     <div class="w3-col m12">
+
+      <div class="w3-container">
+
+          <div id="info" class="w3-modal">
+            <div class="w3-modal-content">
+              <header class="w3-container w3-gray">
+
+                <span id = "info-close" class="w3-button w3-display-topright">&times;</span>
+
+                <h3></h3>
+
+              </header>
+
+                <div id = "info-text" class="w3-container">
+
+              </div>
+
+            </div>
+          </div>
+
+    </div>
+
+
 
     <div class="row">
 
@@ -192,4 +267,10 @@
 
     </div>
 </div>
+
+
+
+
+
+
 {% endblock %}

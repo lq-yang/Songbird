@@ -1,9 +1,11 @@
 # -*- coding: UTF-8 -*-
 import os
+import json
 from flask import Flask, render_template, request
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
+
 from Config import Config
 from Util import prepare_all
 from Recommender import ModelFactory, FilterFactory, SearchFactory
@@ -11,7 +13,7 @@ from Recommender import ModelFactory, FilterFactory, SearchFactory
 # ---- initialize ----
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
-CSRFProtect(app)
+csrf = CSRFProtect(app)
 app.config.from_object(Config)
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
@@ -107,7 +109,16 @@ def info():
         # find basic info
         res['basic'] = Search.get_basic_info(name)
 
-    return render_template("info.html", form=form, res = res)
+    return render_template("info.html", form=form, res=res)
+
+
+@csrf.exempt
+@app.route('/getinfo', methods=['POST'])
+def getinfo():
+    name = request.get_json()['name']
+    name = name.strip()
+    basic = Search.get_basic_info(name)
+    return json.dumps({'status': 'OK', 'basic': basic})
 
 if __name__ == '__main__':
     data_res, model_res = prepare_all()
