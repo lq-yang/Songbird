@@ -55,6 +55,10 @@ def get_caiwu_array(l):
     res[3] = l['feiyong']
     return res
 
+def get_caiwu_mat(cols):
+    return;
+
+
 
 # get filter array
 def get_filter_array(records):

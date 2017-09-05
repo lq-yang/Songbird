@@ -1,3 +1,5 @@
 file,path
 lingyu,../data/基金和领域匹配(分类后).csv
 caiwu,../data/基金会财务信息年分权重后提取关键列（分类后）.csv
+caiwu_ref,../data/基金会财务信息年分权重后提取关键列2.csv
+hottag,../data/hottag.csv

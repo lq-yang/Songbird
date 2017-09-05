@@ -44,7 +44,7 @@ def recommend():
                 res['rec'] = Model.recommend('rec', meet_name)
                 res['rec'] = Filter.get_sort(res['rec'], asc=False)
             else:
-                res['rec'] = None
+                pass
 
             # 感兴趣基金数据
             if interest:
@@ -52,12 +52,12 @@ def recommend():
                 res['similarity'] = Model.recommend('similarity', interest_name)
                 res['similarity'] = Filter.get_sort(res['similarity'], asc=False)
             else:
-                res['similarity'] = None
+                pass
 
             # 业务领域数据
             lingyu = form.lingyu.data
             res['lingyu'] = Model.recommend('lingyu', lingyu)
-            res['lingyu'] = Filter.get_sort(res['lingyu'])
+            res['lingyu'] = Filter.get_sort(res['lingyu'], asc=True)
 
             # 财务数据
             caiwu_res = {}
@@ -66,7 +66,19 @@ def recommend():
             caiwu_res["zhichu"] = form.zhichu.data
             caiwu_res["feiyong"] = form.feiyong.data
             res['caiwu'] = Model.recommend('caiwu', caiwu_res)
-            res['caiwu'] = Filter.get_sort(res['caiwu'])
+
+            # 财务详细
+            caiwu_ref = {}
+            if form.jingzichan_x.data:
+                caiwu_ref['jingzichan_x'] = float(form.jingzichan_x.data)
+            if form.shouru_x.data:
+                caiwu_ref['shouru_x'] = float(form.shouru_x.data)
+            if form.zhichu_x.data:
+                caiwu_ref['zhichu_x'] = float(form.zhichu_x.data)
+            if form.feiyong_x.data:
+                caiwu_ref['feiyong_x'] = float(form.feiyong_x.data)
+
+            res['caiwu'] = Filter.get_sort(res['caiwu'], asc=True, array=caiwu_ref)
 
             # 所在地
             location = form.location.data
@@ -83,15 +95,21 @@ def recommend():
             if len(purity) > 0:
                 Filter.add_constraint('purity', purity)
 
+            # 排序方案
+            plan = request.form['plan']
+            if not plan or plan == "":
+                plan = 3
+            else:
+                plan = plan.split('+')
+                plan = min(plan)
+
             # 开始筛选和合并结果
-            total = Filter.get_result(res)
+            total = Filter.get_result(res, plan)
 
-            # 受欢迎基金
-            popular = Filter.get_popular()
-
-            return render_template("result.html", res=res, total=total, popular=popular)
+            return render_template("result.html", res=res, total=total)
         else:
-            print form.errors
+            pass
+        print form.errors
     return render_template("recommend.html", form=form)
 
 
@@ -109,7 +127,13 @@ def info():
         # find basic info
         res['basic'] = Search.get_basic_info(name)
 
-    return render_template("info.html", form=form, res=res)
+    # 受欢迎基金
+    popular = Filter.get_popular()
+
+    # 热门标签基金
+    hottag = Filter.get_hottag()
+
+    return render_template("info.html", form=form, res=res, popular=popular, hottag = hottag)
 
 
 @csrf.exempt
@@ -118,11 +142,12 @@ def getinfo():
     name = request.get_json()['name']
     name = name.strip()
     basic = Search.get_basic_info(name)
-    return json.dumps({'status': 'OK', 'basic': basic})
+    project = Search.get_project_info(name)
+    return json.dumps({'status': 'OK', 'basic': basic, 'project': project})
 
 if __name__ == '__main__':
     data_res, model_res = prepare_all()
     Model = ModelFactory(data_res, model_res)
-    Filter = FilterFactory()
+    Filter = FilterFactory(ref=data_res)
     Search = SearchFactory()
     app.run(debug=True)

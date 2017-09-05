@@ -71,3 +71,6 @@ class BasicInfo(db.Model):
     website = db.Column(db.String(200))
     yewu = db.Column(db.String(200))
     level = db.Column(db.String(20))
+
+
+

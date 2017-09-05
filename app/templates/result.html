@@ -1,5 +1,6 @@
 {% extends "base.html"%}
 
+
 {% block content%}
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -37,6 +38,18 @@
                             $("#info-text").append("<p align='left'>" + "<strong>" + key + ": "
                                 + "</strong>" + basic[key] + "</p>");
                        }
+                       $("#info-text").append("<hr>")
+                           .append("<table class='table'>")
+                           .append("<thead><tr align='center'><th>项目</th><th>业务领域</th><th>地址</th></tr></thead>")
+                           .append("<tbody>");
+                       var project = res["project"];
+                       for (var i = 0; i < project.length; i++){
+                            var p = project[i];
+                            $("#info-text").append("<tr align='left'><td>" + p['项目'] + "</td>"
+                                + "<td>" + p['业务领域'] + "</td>"
+                                + "<td>" + p['地址'] + "</td>" + "</tr>");
+                       }
+                       $("#info-text").append("</tbody></table>");
                        $("#info").css("display", "block");
                    },
                     error: function(error) {
@@ -52,6 +65,7 @@
 
     })
 </script>
+
 
 <div class="w3-container w3-padding-50 w3-center w3-padding-large" id="main">
 
@@ -82,7 +96,7 @@
 
     <div class="row">
 
-        <div class="col-xs-8">
+        <div class="col-xs-offset-3 col-xs-6">
             <h4 align="center"><span class="glyphicon glyphicon-th-list">综合排行</span></h4>
 
              <table class="table table-hover">
@@ -118,38 +132,6 @@
 
             </table>
         </div>
-
-      <div class="col-xs-4">
-            <h4 align="center"><span class="glyphicon glyphicon-th-list">受欢迎排行</span></h4>
-
-             <table class="table table-hover">
-
-                <tr class="active">
-                    <td> 基金名称 </td>
-                </tr>
-
-                {% for v in popular %}
-
-
-                     {% if loop.index0 % 2 == 0%}
-                        <tr class="default">
-                            {% else %}
-                            <tr class="active">
-                     {% endif %}
-
-                            <td> {{ v }} </td>
-
-                        </tr>
-
-
-                {% endfor%}
-
-
-            </table>
-        </div>
-
-
-
 
     </div >
 

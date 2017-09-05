@@ -46,7 +46,6 @@ def prepare_all():
     dir_path = os.path.dirname(__file__)
     file_path = dir_path + "/" + "../data/data_path.csv"
     model_path = dir_path + "/" + "../data/model_path.csv"
-    ref_path = dir_path + "/" + "../data/ref_path.csv"
     encoding = "utf-8"
     index_col = 0
     header = 0

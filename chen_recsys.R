@@ -166,6 +166,10 @@ colnames(dataTrain) <- paste0(basic, "_label")
 colnames(datatFinal) <- basic[-5]
 data.use <- cbind(dataTrain, datatFinal)
 
-
-
-
+x <- read.csv("./data/透明度信息.csv")
+x <- x[, c(4, 3)]
+x[x[1] == 0, 1] <- "low"
+x[x[1] == 1, 1] <- "median"
+x[x[1] == 2, 1] <- "high"  
+  
+boxplot(score~target, data = x, lex.order = c("low", "median", "high"))

@@ -1,6 +1,4 @@
-import pandas as pd
 import numpy as np
-from sklearn.svm import SVC
 
 
 class ModelBasedRecommender(object):
@@ -152,8 +150,9 @@ class FilterFactory:
     Filter methods to filter out the final result
     """
 
-    def __init__(self):
+    def __init__(self, ref=None):
         self.constraint = {}
+        self.ref = ref
 
     def add_constraint(self, name, c):
         self.constraint[name] = c
@@ -161,8 +160,8 @@ class FilterFactory:
     def clear_constraint(self):
         self.constraint = []
 
-    def get_result(self, x):
-        res = self.add_result(x)
+    def get_result(self, x, order=3):
+        res = self.add_result(x, order)
         self.constraint.clear()
         l = min(10, len(res))
         return res[:l]
@@ -181,7 +180,7 @@ class FilterFactory:
                     return False
         return True
 
-    def add_result(self, x):
+    def add_result(self, x, order=3):
         from collections import Counter
         keys = []
         res = []
@@ -189,34 +188,107 @@ class FilterFactory:
             keys.append(v[0])
         count = Counter(keys)
         count = sorted(count.items(), key=lambda y: -y[1])
+
         # add results that are common
         for member in count:
             if member[1] > 1 and self.test_result(member[0]):
                 res.append(member[0])
         names = ['rec', 'similarity', 'lingyu', 'caiwu']
-        for name in names:
-            self.renew_result(name, x, res)
-        return res
 
-    def renew_result(self, name, x, res, n=10):
-        # based on recommendation
-        if len(res) < n:
-            for k in x[name]:
-                if k[0] not in res and self.test_result(k[0]):
-                    res.append(k[0])
+        # add some in rec and similarity
+        if x.has_key('rec'):
+            for member in x['rec']:
+                if member not in res and self.test_result(member[0]):
+                    res.append(member[0])
+        if x.has_key('similarity'):
+            i = 0
+            for member in x['similarity']:
+                if member not in res and self.test_result(member[0]):
+                    res.append(member[0])
+                    i += 1
+                    if i == 2:
+                        break
 
-    @staticmethod
-    def get_sort(d, asc=True):
-        if asc:
-            res = sorted(d.items(), key=lambda x: x[1])
+        # get the data
+        d1 = x['lingyu']
+        d2 = x['caiwu']
+
+        # different order strategy
+        if order == 3:
+            i, j = 0, 0
+            while len(res) < 10 and i < len(d1) and j < len(d2):
+                while d1[i][0] in res or not self.test_result(d1[i][0]):
+                    i += 1
+                if i < len(d1):
+                    res.append(d1[i][0])
+                while d2[j][0] in res or not self.test_result(d2[j][0]):
+                    j += 1
+                if j < len(d2):
+                    res.append(d2[j][0])
         else:
-            res = sorted(d.items(), key=lambda x: -x[1])
+            if order == 2:
+                d1, d2 = d2, d1
+            rem = 10 - len(res)
+            i, j = 0, 0
+            for k in range(len(d1)):
+                if d1[k][0] in res or not self.test_result(d1[k][0]):
+                    continue
+                else:
+                    res.append(d1[k][0])
+                    i += 1
+                    if i == rem / 2:
+                        break
+            for k in range(len(d2)):
+                if d2[k][0] in res or not self.test_result(d2[k][0]):
+                    continue
+                else:
+                    res.append(d2[k][0])
+                    j += 1
+                    if len(res) == 10:
+                        break
         return res
+
+    def get_sort(self, d, asc=True, array=None):
+        if array and len(array) > 0:
+            res = self.get_sort_helper(d, array)
+        else:
+            if asc:
+                res = sorted(d.items(), key=lambda x: x[1])
+            else:
+                res = sorted(d.items(), key=lambda x: -x[1])
+        return res
+
+    def get_sort_helper(self, d, array):
+        from sklearn.preprocessing import scale
+        from scipy.spatial.distance import cdist
+        data = self.ref['caiwu_ref']
+        names = []
+        sec_d = []
+        for item in d.items():
+            names.append(item[0])
+            sec_d.append(item[1])
+        Y = np.array([i for i in array.values()])
+        Y.shape = (1, len(Y))
+        X = data.ix[names, array.keys()].values
+        l = X.shape[1]
+        A = np.vstack([X, Y])
+        A = scale(A, axis=0, with_mean=True, with_std=True, copy=True)
+        X = A[-1, :].reshape(1, l)
+        Y = A[:-1, :].reshape(len(A[:-1, :]), l)
+        fir_d = cdist(Y, X, metric="euclidean").tolist()
+        Z = zip(names, fir_d, sec_d)
+        Z = sorted(Z, key = lambda x: (x[1], x[2]))
+        Z = [(k[0], k[2]) for k in Z]
+        return Z
+
 
     @staticmethod
     def get_popular():
         from DbConsole import get_popular_data
         return get_popular_data()
+
+    def get_hottag(self):
+        return self.ref['hottag']
 
 
 class SearchFactory:

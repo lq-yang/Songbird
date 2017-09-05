@@ -2,7 +2,7 @@
 
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, SelectMultipleField, SubmitField, \
-    validators, SelectField
+    validators, SelectField, StringField
 from DbConsole import get_lingyu_data, get_caiwu_data, \
     get_location_data, get_management_data, get_purity_data, \
     get_meet_data, get_interest_data, get_basic_data
@@ -11,10 +11,10 @@ from DbConsole import get_lingyu_data, get_caiwu_data, \
 # 推荐表
 class RecommendForm(FlaskForm):
     # 是否查询历史记录
-    meet = BooleanField(u"是否查询资助记录？", [validators.Optional()], default='n')
+    meet = BooleanField(u"是否调取过往资助记录？", [validators.Optional()], default='n')
 
     # 是否查询感兴趣的基金
-    interest = BooleanField(u"是否查询感兴趣的运作方？", [validators.Optional()], default='n')
+    interest = BooleanField(u"是否输入感兴趣的运作方？", [validators.Optional()], default='n')
 
     # 输入名称
     meet_name_choice = get_meet_data()
@@ -38,18 +38,22 @@ class RecommendForm(FlaskForm):
     # 净资产
     jingzichane_choice = caiwu_choice['jingzichan']
     jingzichan = SelectField(u"净资产", choices=jingzichane_choice)
+    jingzichan_x = StringField(u"净资产详细", [validators.Optional()], default=None)
 
     # 收入比列
     shouru_choice = caiwu_choice['shouru']
     shouru = SelectField(u"收入比例", choices=shouru_choice)
+    shouru_x = StringField(u"收入比例详细", [validators.Optional()], default=None)
 
     # 支出比列
     zhichu_choice = caiwu_choice['zhichu']
     zhichu = SelectField(u"支出比例", choices=zhichu_choice)
+    zhichu_x = StringField(u"支出比例详细", [validators.Optional()], default=None)
 
     # 费用比列
     feiyong_choice = caiwu_choice['feiyong']
     feiyong = SelectField(u"费用比例", choices=feiyong_choice)
+    feiyong_x = StringField(u"费用比例详细", [validators.Optional()], default=None)
 
     # 地理位置
     location_choice = get_location_data()

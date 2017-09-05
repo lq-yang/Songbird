@@ -103,5 +103,8 @@ if __name__ == '__main__':
                                 level = record['level'])
         db.session.add(target)
     db.session.commit()
+
+
+
     print "finish adding to database"
 
